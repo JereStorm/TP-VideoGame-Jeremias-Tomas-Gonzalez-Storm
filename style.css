@@ -1,0 +1,112 @@
+body{
+    background-color: aquamarine;
+    margin: 0;
+    max-height: 100%;
+}
+
+.pasto{
+    background: url("/0.png") repeat-x;
+    background-size: 100% 100%;
+    position: absolute;
+    bottom: 150px;
+    width: 100%;
+    height: 200px;
+    z-index: 0;
+    animation: moverFondo 30s linear infinite;
+}
+.piso{
+    background: url("/1.png") repeat-x;
+    background-size: 100% 100%;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 200px;
+    z-index: 1;
+    animation: moverFondo 20s linear infinite;
+}
+.colinas{
+    background: url("/2.png") repeat-x;
+    background-size: 100% 100%;
+    position: absolute;
+    bottom: 200px;
+    width: 100%;
+    height: 200px;
+    z-index: -1;
+    animation: moverFondo 45s linear infinite;
+}
+.arbolesCercanos{
+    background: url("/3.png") repeat-x;
+    background-size: 100% 100%;
+    position: absolute;
+    bottom: 200px;
+    width: 100%;
+    height: 330px;
+    z-index: -1;
+    animation: moverFondo 40s linear infinite;
+}
+.arbolesLejanos{
+    background: url("/4.png") repeat-x;
+    background-size: 100% 100%;
+    position: absolute;
+    bottom: 300px;
+    width: 100%;
+    height: 400px;
+    z-index: -3;
+    animation: moverFondo 60s linear infinite;
+}
+
+.pibe{
+    position: absolute;
+    bottom: 70px;
+    width: 256px;
+    height: 256px;
+    background-image: url(child.png);
+    background-position: left center;
+    animation: moverPibe 1s steps(6) infinite;
+    z-index: 2;
+    }
+
+    @keyframes moverPibe {
+        from{
+            background-position: 0px;
+        }
+        to{
+            background-position: -1536px;
+        }
+    }
+@keyframes moverFondo {
+    0% {
+        background-position: 5000px
+    }
+
+    100% {
+        background-position: 0px
+    }
+}
+
+.saltar {
+    animation: saltar 800ms cubic-bezier(0,0,.5,1) forwards; 
+}
+
+@keyframes saltar {
+    from {
+        bottom: 18%;
+    }
+    to {
+        bottom: 50%;
+    }
+   
+}
+
+.caer {
+    animation: caer 600ms cubic-bezier(0,0,.5,1) forwards;
+}
+
+@keyframes caer {
+    from {
+        bottom: 50%;
+    }
+    to {
+        bottom: 18%;
+    }
+}
