@@ -1,24 +1,32 @@
 "use strict";
 
+
 /*
 --------------------------------------
 ELEMENTOS DE EXPERIENCIA DE USUARIO
 --------------------------------------
 */
-
 let comunicador = document.getElementById("comunicador");
-let vida = null; //por implementar
-
+let vida = document.querySelector(".vida");
+let puntaje = document.querySelector(".puntaje");
+let puntajeAnterior = document.getElementById("puntajeAnterior");
+let gameOver = document.querySelector('.gameOver');
+let jugarDeNuevo = document.getElementById('jugarDeNuevo');
 /*
 --------------------------------------
 VARIABLES DE CONTROL JUEGO
 --------------------------------------
 */
+const prendaColisionEnemigo = 600;
 let in_game = true;
+let tiempoEnemigo = (Math.random() * 10 + 1) * 1000;
 let contendor = document.getElementById("contenedor");
+let vidaValues = 4;
+let puntajeActual = 1;
 let runner = new Runner();
 let enemigo = null;
-let colision = false;
+let colisionEnemigo = false;
+let bandera = false;
 
 /*
 --------------------------------------
@@ -31,16 +39,31 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+jugarDeNuevo.addEventListener('click', () => {
+    if (enemigo) {
+        contendor.removeChild(enemigo.getNode());
+    }
+    enemigo = null;
+    puntajeActual = 0;
+    vidaValues = 4;
+    gameOver.classList.add('desaparecer');
+    contendor.classList.remove('desaparecer');
+    actualizarVida();
+    in_game = true;
+    gameLoop();
+})
+
 /*
 --------------------------------------
 INICIADOR EL JUEGO
 --------------------------------------
 */
 gameLoop();
+actualizarVida();
 
 setInterval(() => {
     generarEnemigo();
-}, 5000);
+}, tiempoEnemigo);
 
 /*
 --------------------------------------
@@ -49,37 +72,81 @@ FUNCIONES DEL GAME LOOP
 */
 
 function procesar_entrada_usuario() {
-    if (enemigo) {
+    if (enemigo && !bandera) {
         let statusEnemigo = enemigo.status();
         let statusRunner = runner.status();
         //acoto el calculo de la colision a un punto cerca al runner
         if (statusEnemigo.left > 100 && statusEnemigo.left < statusRunner.left + 100) {
             // console.log("el enemigo esta cerca")
-            detectarColision()
+            detectarColision();
         };
     }
-
 }
 
 function actualizar_estado() {
-    // actualizar estado
-    if (colision) {
-        console.log(colision);
-        colision = false;
+    if (colisionEnemigo) {
+        if (!bandera) {
+            actualizarVida();
+            if (vidaValues > 0) {
+                puntajeActual = puntajeActual - prendaColisionEnemigo;
+            }
+        }
+        bandera = true;
+        colisionEnemigo = false;
     }
+
+}
+
+function actualizarVida() {
+
+    switch (vidaValues) {
+        case 4:
+            vida.style.backgroundPosition = "0px";
+            vidaValues = 3;
+            break;
+        case 3:
+            vida.style.backgroundPosition = "-80px";
+            vidaValues = 2;
+            break;
+        case 2:
+            vida.style.backgroundPosition = "-160px";
+            vidaValues = 1;
+            break;
+        case 1:
+            vida.style.backgroundPosition = "-240px";
+            vidaValues = 0;
+            break;
+        case 0:
+            in_game = false;
+            break;
+        default:
+            break;
+    }
+
 }
 
 function renderizar() {
-    // dibujar juego
+    puntaje.textContent = puntajeActual++;
 }
 
 function gameLoop() {
     procesar_entrada_usuario();
+
     actualizar_estado();
+
     renderizar();
+
+    if (puntajeActual <= 0) {
+        in_game = false;
+        puntajeActual = 0;
+    }
 
     if (in_game) {
         requestAnimationFrame(gameLoop);
+    } else {
+        contendor.classList.add('desaparecer');
+        gameOver.classList.remove('desaparecer');
+        puntajeAnterior.innerHTML = puntajeActual;
     }
 }
 
@@ -101,11 +168,10 @@ function detectarColision() {
         b: b.top + b.height - 100
     };
 
-
     //Detecta si se superponen las áreas
     if (a_pos.l <= b_pos.r && a_pos.r >= b_pos.l
         && a_pos.b >= b_pos.t && a_pos.t <= b_pos.b) {
-        colision = true;
+        colisionEnemigo = true;
     }
 }
 
@@ -115,4 +181,5 @@ function generarEnemigo() {
     }
 
     enemigo = new Enemigo();
+    bandera = false;
 }

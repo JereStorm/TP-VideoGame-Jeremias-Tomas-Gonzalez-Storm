@@ -36,9 +36,6 @@ class Runner extends Personaje {
         });
     }
 
-    /**
-     * 
-     */
     clean() {
         this.personaje.classList.remove("correr");
         this.personaje.classList.remove("saltar");

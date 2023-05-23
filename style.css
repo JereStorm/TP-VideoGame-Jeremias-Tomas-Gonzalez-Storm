@@ -21,9 +21,79 @@ body{
     justify-content: center;
     align-items: center;
 }
-.desaparecer {
-    display: none;
+/*
+--------------------------------------
+EXPERIENCIA DE USUARIO
+--------------------------------------
+*/
+.vida{
+    position: absolute;
+    width: 80px;
+    height: 100px;
+    top: 50px;
+    left: 50px;
+    background-color: rgba(0, 0, 0, 0.438);
+    background: url(img/vida/heart_animated_2.png) no-repeat;
+    background-size: 400px 100px;
+    background-position: 0px;
 }
+.puntaje{
+    width: 200px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.438);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 50px;
+    border-radius: 5px;
+    color: aliceblue;
+    text-align: center;
+    position: absolute;
+    right: 50px;
+    top: 50px;
+}
+/*
+--------------------------------------
+GAME OVER SECTION
+--------------------------------------
+*/
+
+.gameOver{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    text-align: center;
+}
+
+.gameOver h1{
+    font-size: 100px;
+    font-family: 'Rubik Puddles', cursive;
+}
+.gameOver button{
+    padding: 5px 20px;
+    border-radius: 5px;
+    border: 2px solid black;
+    background-color: aquamarine;
+    font-size: 50px;
+    color: rgb(23, 23, 23);
+    cursor: pointer;
+    transition: all 1s ease;
+}
+.gameOver button:hover{
+    background-color: rgb(23, 23, 23);
+    color: aquamarine;
+}
+.gameOver p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 50px;
+}
+.gameOver p span {
+    background-color: black;
+    color: aliceblue;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 /*
 --------------------------------------
 FONDO PARALLAX 
@@ -103,13 +173,12 @@ CLASES CON ANIMACIONES
     animation: moverPibe 1s steps(6) infinite;
 }
 
-
 .saltar {
     animation: saltar 800ms cubic-bezier(0,0,.5,1) forwards; 
 }
 
 .caer {
-    animation: caer 600ms cubic-bezier(0,0,.5,1) forwards;
+    animation: caer 500ms cubic-bezier(0,0,.5,1) forwards;
 }
 
 /*
@@ -164,4 +233,7 @@ ANIMACIONES
     to {
         bottom: 70px;
     }
+}
+.desaparecer {
+    display: none;
 }
