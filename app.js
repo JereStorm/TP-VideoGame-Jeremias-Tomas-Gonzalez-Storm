@@ -1,6 +1,5 @@
 "use strict";
 
-
 /*
 --------------------------------------
 ELEMENTOS DE EXPERIENCIA DE USUARIO
@@ -17,9 +16,9 @@ let jugarDeNuevo = document.getElementById('jugarDeNuevo');
 VARIABLES DE CONTROL JUEGO
 --------------------------------------
 */
-const prendaColisionEnemigo = 600;
+const prendaColisionEnemigo = 100;
 let in_game = true;
-let tiempoEnemigo = (Math.random() * 10 + 1) * 1000;
+let tiempoEnemigo = 5000;
 let contendor = document.getElementById("contenedor");
 let vidaValues = 4;
 let puntajeActual = 1;
@@ -33,6 +32,7 @@ let bandera = false;
 MANEJANDO EVENTOS DEL USUARIO
 --------------------------------------
 */
+
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp") {
         runner.saltar();
@@ -47,6 +47,8 @@ jugarDeNuevo.addEventListener('click', () => {
     puntajeActual = 0;
     vidaValues = 4;
     gameOver.classList.add('desaparecer');
+    comunicador.classList.add('desaparecer');
+    comunicador.classList.remove('choqueEnemigo');
     contendor.classList.remove('desaparecer');
     actualizarVida();
     in_game = true;
@@ -85,12 +87,22 @@ function procesar_entrada_usuario() {
 
 function actualizar_estado() {
     if (colisionEnemigo) {
+        //Cuando colisione por primera ves la bandera = false
         if (!bandera) {
+            comunicador.classList.remove('desaparecer');
+            comunicador.classList.add('choqueEnemigo');
+            comunicador.addEventListener("animationend", () => {
+                comunicador.classList.add('desaparecer');
+                comunicador.classList.remove('choqueEnemigo');
+            })
             actualizarVida();
             if (vidaValues > 0) {
                 puntajeActual = puntajeActual - prendaColisionEnemigo;
             }
+            comunicador.removeEventListener("animationend", () => { });
         }
+        //Luego de actualizar la vida por primera vez hacemos bandera = true
+        //para poder controlar una colision por enemigo
         bandera = true;
         colisionEnemigo = false;
     }
@@ -181,5 +193,6 @@ function generarEnemigo() {
     }
 
     enemigo = new Enemigo();
+    //Cuando apareza un Enemigo habilitaremos una nueva colision
     bandera = false;
 }
