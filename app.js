@@ -40,17 +40,24 @@ document.addEventListener("keydown", (event) => {
 });
 
 jugarDeNuevo.addEventListener('click', () => {
+    //reseteamos el estado del enemigo
     if (enemigo) {
         contendor.removeChild(enemigo.getNode());
     }
     enemigo = null;
-    puntajeActual = 0;
+    //reseteamos el puntaje
+    puntajeActual = 1;
+    //reseteamos la vida
     vidaValues = 4;
+    actualizarVida();
+    //desaparecemos la pantalla de gameOver
     gameOver.classList.add('desaparecer');
+    //reseteamos el comunicador
     comunicador.classList.add('desaparecer');
     comunicador.classList.remove('choqueEnemigo');
+    //aparecemos la pantalla del juego
     contendor.classList.remove('desaparecer');
-    actualizarVida();
+    //volvemos a jugar
     in_game = true;
     gameLoop();
 })
@@ -89,12 +96,7 @@ function actualizar_estado() {
     if (colisionEnemigo) {
         //Cuando colisione por primera ves la bandera = false
         if (!bandera) {
-            comunicador.classList.remove('desaparecer');
-            comunicador.classList.add('choqueEnemigo');
-            comunicador.addEventListener("animationend", () => {
-                comunicador.classList.add('desaparecer');
-                comunicador.classList.remove('choqueEnemigo');
-            })
+            mostrarComunicador();
             actualizarVida();
             if (vidaValues > 0) {
                 puntajeActual = puntajeActual - prendaColisionEnemigo;
@@ -105,34 +107,6 @@ function actualizar_estado() {
         //para poder controlar una colision por enemigo
         bandera = true;
         colisionEnemigo = false;
-    }
-
-}
-
-function actualizarVida() {
-
-    switch (vidaValues) {
-        case 4:
-            vida.style.backgroundPosition = "0px";
-            vidaValues = 3;
-            break;
-        case 3:
-            vida.style.backgroundPosition = "-80px";
-            vidaValues = 2;
-            break;
-        case 2:
-            vida.style.backgroundPosition = "-160px";
-            vidaValues = 1;
-            break;
-        case 1:
-            vida.style.backgroundPosition = "-240px";
-            vidaValues = 0;
-            break;
-        case 0:
-            in_game = false;
-            break;
-        default:
-            break;
     }
 
 }
@@ -162,6 +136,48 @@ function gameLoop() {
     }
 }
 
+/*
+--------------------------------------
+FUNCIONES DE EXPERIENCIA DE USUARIO
+--------------------------------------
+*/
+
+function mostrarComunicador() {
+    comunicador.classList.remove('desaparecer');
+    comunicador.classList.add('choqueEnemigo');
+    comunicador.addEventListener("animationend", () => {
+        comunicador.classList.add('desaparecer');
+        comunicador.classList.remove('choqueEnemigo');
+    });
+}
+
+function actualizarVida() {
+
+    switch (vidaValues) {
+        case 4:
+            vida.style.backgroundPosition = "0px";
+            vidaValues = 3;
+            break;
+        case 3:
+            vida.style.backgroundPosition = "-80px";
+            vidaValues = 2;
+            break;
+        case 2:
+            vida.style.backgroundPosition = "-160px";
+            vidaValues = 1;
+            break;
+        case 1:
+            vida.style.backgroundPosition = "-240px";
+            vidaValues = 0;
+            break;
+        case 0:
+            in_game = false;
+            break;
+        default:
+            break;
+    }
+
+}
 function detectarColision() {
 
     let a = runner.status();

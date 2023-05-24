@@ -24,18 +24,23 @@ body{
     font-size: 20px;
 }
 .choqueEnemigo{
-    animation: choqueEnemigo 2s linear;
+    animation: choqueEnemigo 2.5s ease-in;
 }
 
 @keyframes choqueEnemigo {
     0%{
         font-size: 20px;
+        transform: rotate(-15deg);
+
     }
     50%{
         font-size: 60px;
+        transform: rotate(360deg);
     }
     100%{
         font-size: 20px;
+        transform: rotate(-15deg);
+
     }
 }
 /*
