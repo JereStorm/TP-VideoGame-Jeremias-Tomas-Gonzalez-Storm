@@ -15,4 +15,11 @@ class Enemigo extends Personaje {
     getNode() {
         return this.enemigo;
     }
+
+    morir() {
+        this.enemigo.classList.add('enemigoMorir');
+        this.enemigo.addEventListener("animationend", () => {
+            document.getElementById("contenedor").removeChild(this.enemigo);
+        })
+    }
 }

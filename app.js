@@ -22,11 +22,11 @@ VARIABLES DE CONTROL JUEGO
 const prendaColisionEnemigo = 300;
 let in_game = false;
 let in_gameOver = false;
-
+const pjPrincipal = document.getElementById('pibe');
 
 let tiempoEnemigo = 5000;
-let minTiempoEnemigo = 4;
-let maxTiempoEnemigo = 6;
+let minTiempoEnemigo = 1;
+let maxTiempoEnemigo = 8;
 let counterEnemigo = 0;
 let intervalEnemigo;
 
@@ -36,6 +36,7 @@ let puntajeActual = 1;
 let runner = new Runner();
 let enemigo = null;
 let colisionEnemigo = false;
+let golpeEnemigo = false;
 let bandera = false;
 
 
@@ -89,16 +90,10 @@ jugarDeNuevo.addEventListener('click', () => {
     //activamos la musica
     manejadorAudio.sonarPrincipal();
     //resewteamos el interval
-
+    tiempoEnemigo = 5000;
     intervalEnemigo = setInterval(() => {
         generarEnemigo();
     }, tiempoEnemigo);
-    // tiempoEnemigo = 5000;
-    // counterEnemigo = 0;
-    // maxTiempoEnemigo = 6;
-    // minTiempoEnemigo = 4;
-
-
 
     //volvemos a jugar
     in_game = true;
@@ -118,8 +113,7 @@ FUNCIONES DEL GAME LOOP
 --------------------------------------
 */
 
-function procesar_entrada_usuario() {
-
+function actualizar_estado() {
     if (enemigo && !bandera) {
         let statusEnemigo = enemigo.status();
         let statusRunner = runner.status();
@@ -129,37 +123,39 @@ function procesar_entrada_usuario() {
             detectarColision();
         };
     }
-}
 
-function actualizar_estado() {
     if (colisionEnemigo) {
         //Cuando colisione por primera ves la bandera = false
         if (!bandera) {
             mostrarComunicador();
             actualizarVida();
-            if (vidaValues >= 0) {
-                puntajeActual = puntajeActual - prendaColisionEnemigo;
-            }
             comunicador.removeEventListener("animationend", () => { });
         }
         //Luego de actualizar la vida por primera vez hacemos bandera = true
         //para poder controlar una colision por enemigo
         bandera = true;
         colisionEnemigo = false;
+    } else if (golpeEnemigo) {
+        if (!bandera) {
+            enemigo.morir();
+            puntajeActual = puntajeActual + prendaColisionEnemigo;
+        }
+        bandera = true;
+        golpeEnemigo = false;
     }
 
-}
-
-function renderizar() {
     puntaje.textContent = puntajeActual++;
 }
 
+
 function gameLoop() {
-    procesar_entrada_usuario();
+    if (enemigo) {
+        if (enemigo.status().left < 0 - enemigo.status().width) {
+            juegoContainer.removeChild(enemigo.getNode());
+        }
+    }
 
     actualizar_estado();
-
-    renderizar();
 
     if (puntajeActual <= 0) {
         in_game = false;
@@ -202,14 +198,17 @@ function actualizarVida() {
         case 3:
             vida.style.backgroundPosition = "-80px";
             vidaValues = 2;
+            puntajeActual -= prendaColisionEnemigo;
             break;
         case 2:
             vida.style.backgroundPosition = "-160px";
             vidaValues = 1;
+            puntajeActual -= prendaColisionEnemigo;
             break;
         case 1:
             vida.style.backgroundPosition = "-240px";
             vidaValues = 0;
+            puntajeActual -= prendaColisionEnemigo;
             break;
         case 0:
             manejadorAudio.sonarPerdio();
@@ -242,26 +241,32 @@ function detectarColision() {
     //Detecta si se superponen las áreas
     if (a_pos.l <= b_pos.r && a_pos.r >= b_pos.l
         && a_pos.b >= b_pos.t && a_pos.t <= b_pos.b) {
-        colisionEnemigo = true;
+
+        if (pjPrincipal.classList.contains("caer")) {
+            golpeEnemigo = true
+        } else {
+            colisionEnemigo = true;
+        }
     }
 }
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
 function generarEnemigo() {
-    // counterEnemigo++;
-    // if (counterEnemigo == 2 && minTiempoEnemigo > 1) {
-    //     minTiempoEnemigo--;
-    //     maxTiempoEnemigo--;
-    //     counterEnemigo = 0;
-    // }
 
-    // tiempoEnemigo = getRandomArbitrary(minTiempoEnemigo * 1000, maxTiempoEnemigo * 1000);
+    clearInterval(intervalEnemigo);
+    intervalEnemigo = setInterval(() => {
+        generarEnemigo();
+    }, tiempoEnemigo);
+
+
+    tiempoEnemigo = getRandomArbitrary(minTiempoEnemigo * 1000, maxTiempoEnemigo * 1000);
     // console.log(tiempoEnemigo, minTiempoEnemigo, maxTiempoEnemigo)
 
-    if (enemigo) {
-        juegoContainer.removeChild(enemigo.getNode());
-    }
+
+
+
+
 
     enemigo = new Enemigo();
     //Cuando apareza un Enemigo habilitaremos una nueva colision
