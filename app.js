@@ -19,10 +19,10 @@ let iniciarJuego = document.getElementById('iniciarJuego');
 VARIABLES DE CONTROL JUEGO
 --------------------------------------
 */
-const prendaColisionEnemigo = 300;
+const prendaColisionEnemigo = 400;
+const pjPrincipal = document.getElementById('pibe');
 let in_game = false;
 let in_gameOver = false;
-const pjPrincipal = document.getElementById('pibe');
 
 let tiempoEnemigo = 5000;
 let minTiempoEnemigo = 2;
@@ -156,6 +156,7 @@ function gameLoop() {
 
     if (puntajeActual <= 0) {
         in_game = false;
+        in_gameOver = true;
         puntajeActual = 0;
     }
 

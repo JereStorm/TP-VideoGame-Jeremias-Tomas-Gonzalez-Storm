@@ -201,7 +201,6 @@ PERSONAJES
     width: 304px;
     height: 246px;
     background: url(img/enemigos/terrestre1.png);
-    animation: enemigo 2s forwards ease-in, correrEnemigo .75s steps(17) infinite;
     z-index: 1;
 }
 
@@ -229,7 +228,7 @@ CLASES CON ANIMACIONES
 }
 
 .saltar {
-    animation: saltar 800ms cubic-bezier(0,0,.5,1) forwards; 
+    animation: saltar 600ms cubic-bezier(0,0,.5,1) forwards; 
 }
 
 .caer {
