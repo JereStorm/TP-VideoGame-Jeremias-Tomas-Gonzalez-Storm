@@ -25,7 +25,7 @@ let in_gameOver = false;
 const pjPrincipal = document.getElementById('pibe');
 
 let tiempoEnemigo = 5000;
-let minTiempoEnemigo = 1;
+let minTiempoEnemigo = 2;
 let maxTiempoEnemigo = 8;
 let counterEnemigo = 0;
 let intervalEnemigo;
@@ -35,6 +35,7 @@ let vidaValues = 4;
 let puntajeActual = 1;
 let runner = new Runner();
 let enemigo = null;
+let enemigos = [];
 let colisionEnemigo = false;
 let golpeEnemigo = false;
 let bandera = false;
@@ -149,11 +150,7 @@ function actualizar_estado() {
 
 
 function gameLoop() {
-    if (enemigo) {
-        if (enemigo.status().left < 0 - enemigo.status().width) {
-            juegoContainer.removeChild(enemigo.getNode());
-        }
-    }
+    limpiarEnemigosPasados();
 
     actualizar_estado();
 
@@ -254,6 +251,7 @@ function getRandomArbitrary(min, max) {
 }
 function generarEnemigo() {
 
+
     clearInterval(intervalEnemigo);
     intervalEnemigo = setInterval(() => {
         generarEnemigo();
@@ -261,14 +259,19 @@ function generarEnemigo() {
 
 
     tiempoEnemigo = getRandomArbitrary(minTiempoEnemigo * 1000, maxTiempoEnemigo * 1000);
-    // console.log(tiempoEnemigo, minTiempoEnemigo, maxTiempoEnemigo)
 
-
-
-
-
-
-    enemigo = new Enemigo();
     //Cuando apareza un Enemigo habilitaremos una nueva colision
     bandera = false;
+
+    enemigo = new Enemigo();
+    enemigos.push(enemigo);
+
+}
+function limpiarEnemigosPasados() {
+    enemigos.forEach(iteEnemigo => {
+
+        if (iteEnemigo.status().left < 0 - iteEnemigo.status().width) {
+            juegoContainer.removeChild(iteEnemigo.getNode());
+        }
+    });
 }
