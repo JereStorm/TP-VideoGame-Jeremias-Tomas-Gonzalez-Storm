@@ -9,17 +9,28 @@ let comunicador = document.getElementById("comunicador");
 let vida = document.querySelector(".vida");
 let puntaje = document.querySelector(".puntaje");
 let puntajeAnterior = document.getElementById("puntajeAnterior");
-let gameOver = document.querySelector('.gameOver');
+let gameOverContainer = document.querySelector('.gameOver');
+let inicioJuegoContainer = document.querySelector('.inicio');
+let juegoContainer = document.getElementById("contenedor");
 let jugarDeNuevo = document.getElementById('jugarDeNuevo');
+let iniciarJuego = document.getElementById('iniciarJuego');
 /*
 --------------------------------------
 VARIABLES DE CONTROL JUEGO
 --------------------------------------
 */
-const prendaColisionEnemigo = 100;
-let in_game = true;
+const prendaColisionEnemigo = 300;
+let in_game = false;
+let in_gameOver = false;
+
+
 let tiempoEnemigo = 5000;
-let contendor = document.getElementById("contenedor");
+let minTiempoEnemigo = 4;
+let maxTiempoEnemigo = 6;
+let counterEnemigo = 0;
+let intervalEnemigo;
+
+
 let vidaValues = 4;
 let puntajeActual = 1;
 let runner = new Runner();
@@ -27,22 +38,40 @@ let enemigo = null;
 let colisionEnemigo = false;
 let bandera = false;
 
+
+/*
+--------------------------------------
+SONIDOS
+--------------------------------------
+*/
+const manejadorAudio = new ManejadorAudio();
 /*
 --------------------------------------
 MANEJANDO EVENTOS DEL USUARIO
 --------------------------------------
 */
+iniciarJuego.addEventListener('click', () => {
+    manejadorAudio.sonarPrincipal();
+    inicioJuegoContainer.classList.add("desaparecer");
+    juegoContainer.classList.remove("desaparecer");
+    in_game = true;
+    gameLoop();
 
-document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowUp") {
-        runner.saltar();
-    }
-});
+    intervalEnemigo = setInterval(() => {
+        generarEnemigo();
+    }, tiempoEnemigo);
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowUp" && in_game) {
+            runner.saltar();
+        }
+    });
+})
 
 jugarDeNuevo.addEventListener('click', () => {
     //reseteamos el estado del enemigo
     if (enemigo) {
-        contendor.removeChild(enemigo.getNode());
+        juegoContainer.removeChild(enemigo.getNode());
     }
     enemigo = null;
     //reseteamos el puntaje
@@ -51,12 +80,26 @@ jugarDeNuevo.addEventListener('click', () => {
     vidaValues = 4;
     actualizarVida();
     //desaparecemos la pantalla de gameOver
-    gameOver.classList.add('desaparecer');
+    gameOverContainer.classList.add('desaparecer');
     //reseteamos el comunicador
     comunicador.classList.add('desaparecer');
     comunicador.classList.remove('choqueEnemigo');
     //aparecemos la pantalla del juego
-    contendor.classList.remove('desaparecer');
+    juegoContainer.classList.remove('desaparecer');
+    //activamos la musica
+    manejadorAudio.sonarPrincipal();
+    //resewteamos el interval
+
+    intervalEnemigo = setInterval(() => {
+        generarEnemigo();
+    }, tiempoEnemigo);
+    // tiempoEnemigo = 5000;
+    // counterEnemigo = 0;
+    // maxTiempoEnemigo = 6;
+    // minTiempoEnemigo = 4;
+
+
+
     //volvemos a jugar
     in_game = true;
     gameLoop();
@@ -69,11 +112,6 @@ INICIADOR EL JUEGO
 */
 gameLoop();
 actualizarVida();
-
-setInterval(() => {
-    generarEnemigo();
-}, tiempoEnemigo);
-
 /*
 --------------------------------------
 FUNCIONES DEL GAME LOOP
@@ -81,6 +119,7 @@ FUNCIONES DEL GAME LOOP
 */
 
 function procesar_entrada_usuario() {
+
     if (enemigo && !bandera) {
         let statusEnemigo = enemigo.status();
         let statusRunner = runner.status();
@@ -98,7 +137,7 @@ function actualizar_estado() {
         if (!bandera) {
             mostrarComunicador();
             actualizarVida();
-            if (vidaValues > 0) {
+            if (vidaValues >= 0) {
                 puntajeActual = puntajeActual - prendaColisionEnemigo;
             }
             comunicador.removeEventListener("animationend", () => { });
@@ -129,10 +168,12 @@ function gameLoop() {
 
     if (in_game) {
         requestAnimationFrame(gameLoop);
-    } else {
-        contendor.classList.add('desaparecer');
-        gameOver.classList.remove('desaparecer');
+    } else if (in_gameOver) {
+        manejadorAudio.pararPrincipal();
+        juegoContainer.classList.add('desaparecer');
+        gameOverContainer.classList.remove('desaparecer');
         puntajeAnterior.innerHTML = puntajeActual;
+        clearInterval(intervalEnemigo);
     }
 }
 
@@ -171,7 +212,9 @@ function actualizarVida() {
             vidaValues = 0;
             break;
         case 0:
+            manejadorAudio.sonarPerdio();
             in_game = false;
+            in_gameOver = true;
             break;
         default:
             break;
@@ -202,10 +245,22 @@ function detectarColision() {
         colisionEnemigo = true;
     }
 }
-
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
 function generarEnemigo() {
+    // counterEnemigo++;
+    // if (counterEnemigo == 2 && minTiempoEnemigo > 1) {
+    //     minTiempoEnemigo--;
+    //     maxTiempoEnemigo--;
+    //     counterEnemigo = 0;
+    // }
+
+    // tiempoEnemigo = getRandomArbitrary(minTiempoEnemigo * 1000, maxTiempoEnemigo * 1000);
+    // console.log(tiempoEnemigo, minTiempoEnemigo, maxTiempoEnemigo)
+
     if (enemigo) {
-        contendor.removeChild(enemigo.getNode());
+        juegoContainer.removeChild(enemigo.getNode());
     }
 
     enemigo = new Enemigo();
