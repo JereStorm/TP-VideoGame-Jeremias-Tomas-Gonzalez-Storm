@@ -1,11 +1,11 @@
-class Personaje {
+class ItemDinamico {
 
     constructor() {
 
     }
 
     status() {
-        return ;
+        return;
     }
 
 }

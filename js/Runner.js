@@ -1,4 +1,4 @@
-class Runner extends Personaje {
+class Runner extends ItemDinamico {
 
     constructor() {
         super();

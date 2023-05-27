@@ -1,20 +1,23 @@
-class Enemigo extends Personaje {
+class Enemigo extends ItemDinamico {
 
-    constructor() {
+    constructor(velocidad) {
         super();
 
         this.enemigo = document.createElement("div");
         this.enemigo.classList.add("enemigo");
+        this.velocidad = velocidad;
 
         let theRandomNumber = Math.floor(Math.random() * 10) + 1;
+
         if (theRandomNumber % 2 == 0) {
-            this.enemigo.style.animation = 'enemigo 2s forwards ease-in, correrEnemigo .75s steps(17) infinite';
+            this.enemigo.style.animation = `enemigo ${this.velocidad}s forwards ease-in, correrEnemigo .75s steps(17) infinite`;
         } else {
-            this.enemigo.style.animation = 'enemigo 2s forwards ease-out, correrEnemigo .75s steps(17) infinite';
+            this.enemigo.style.animation = `enemigo ${this.velocidad}s forwards ease-out, correrEnemigo .75s steps(17) infinite`;
         }
 
         document.getElementById("contenedor").appendChild(this.enemigo);
     }
+
 
     status() {
         return this.enemigo.getBoundingClientRect();

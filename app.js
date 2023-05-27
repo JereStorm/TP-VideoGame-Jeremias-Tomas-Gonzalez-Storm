@@ -24,21 +24,29 @@ const pjPrincipal = document.getElementById('pibe');
 let in_game = false;
 let in_gameOver = false;
 
-let tiempoEnemigo = 5000;
+let tiempoGeneracionEnemigo = 5000;
+let tiempoVelocidadEnemigo = 10000;
+let velocidadEnemigo = 1.9;
 let minTiempoEnemigo = 2;
 let maxTiempoEnemigo = 8;
 let counterEnemigo = 0;
-let intervalEnemigo;
+let intervalGeneracionEnemigo;
+let intervalVelocidadEnemigo;
+let intervalCofre;
+let tiempoCofre = 15000;
 
 
 let vidaValues = 4;
 let puntajeActual = 1;
 let runner = new Runner();
+let cofre = null;
 let enemigo = null;
 let enemigos = [];
 let colisionEnemigo = false;
+let colisionCofre = false;
 let golpeEnemigo = false;
-let bandera = false;
+let banderaEnemigo = false;
+let banderaCofre = false;
 
 
 /*
@@ -59,9 +67,21 @@ iniciarJuego.addEventListener('click', () => {
     in_game = true;
     gameLoop();
 
-    intervalEnemigo = setInterval(() => {
+    intervalGeneracionEnemigo = setInterval(() => {
         generarEnemigo();
-    }, tiempoEnemigo);
+    }, tiempoGeneracionEnemigo);
+
+    intervalCofre = setInterval(() => {
+        generarCofre();
+    }, tiempoCofre);
+
+    intervalVelocidadEnemigo = setInterval(() => {
+        if (velocidadEnemigo < 1.1) {
+            clearInterval(intervalVelocidadEnemigo);
+            return;
+        }
+        velocidadEnemigo = velocidadEnemigo - 0.1;
+    }, tiempoVelocidadEnemigo);
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "ArrowUp" && in_game) {
@@ -71,7 +91,12 @@ iniciarJuego.addEventListener('click', () => {
 })
 
 jugarDeNuevo.addEventListener('click', () => {
-    //reseteamos el estado del enemigo
+    //removemos el cofre si lo hay
+    if (cofre) {
+        juegoContainer.removeChild(cofre.getNode());
+    }
+    cofre = null;
+    //removemos el estado del enemigo
     if (enemigo) {
         juegoContainer.removeChild(enemigo.getNode());
     }
@@ -80,7 +105,7 @@ jugarDeNuevo.addEventListener('click', () => {
     puntajeActual = 1;
     //reseteamos la vida
     vidaValues = 4;
-    actualizarVida();
+    vida.style.backgroundPosition = '0px';
     //desaparecemos la pantalla de gameOver
     gameOverContainer.classList.add('desaparecer');
     //reseteamos el comunicador
@@ -91,10 +116,23 @@ jugarDeNuevo.addEventListener('click', () => {
     //activamos la musica
     manejadorAudio.sonarPrincipal();
     //resewteamos el interval
-    tiempoEnemigo = 5000;
-    intervalEnemigo = setInterval(() => {
+    tiempoGeneracionEnemigo = 5000;
+    velocidadEnemigo = 1.9;
+    intervalGeneracionEnemigo = setInterval(() => {
         generarEnemigo();
-    }, tiempoEnemigo);
+    }, tiempoGeneracionEnemigo);
+
+    intervalCofre = setInterval(() => {
+        generarCofre();
+    }, tiempoCofre);
+
+    intervalVelocidadEnemigo = setInterval(() => {
+        if (velocidadEnemigo < 1.1) {
+            clearInterval(intervalVelocidadEnemigo);
+            return;
+        }
+        velocidadEnemigo = velocidadEnemigo - 0.1;
+    }, tiempoVelocidadEnemigo);
 
     //volvemos a jugar
     in_game = true;
@@ -107,7 +145,6 @@ INICIADOR EL JUEGO
 --------------------------------------
 */
 gameLoop();
-actualizarVida();
 /*
 --------------------------------------
 FUNCIONES DEL GAME LOOP
@@ -115,33 +152,52 @@ FUNCIONES DEL GAME LOOP
 */
 
 function actualizar_estado() {
-    if (enemigo && !bandera) {
+    if (enemigo && !banderaEnemigo) {
         let statusEnemigo = enemigo.status();
         let statusRunner = runner.status();
         //acoto el calculo de la colision a un punto cerca al runner
         if (statusEnemigo.left > 100 && statusEnemigo.left < statusRunner.left + 100) {
             // console.log("el enemigo esta cerca")
-            detectarColision();
+            detectarColisionEnemigo();
         };
+    }
+
+    if (cofre && !banderaCofre) {
+        let statusRunner = runner.status();
+        let statusCofre = cofre.status();
+
+        if (statusCofre.left > 100 && statusCofre.left < statusRunner.left + 100) {
+            detectarColisionCofre();
+        }
+    }
+
+    if (colisionCofre) {
+        if (!banderaCofre) {
+            aumentarVida();
+            juegoContainer.removeChild(cofre.getNode());
+            cofre = null;
+        }
+        banderaCofre = true;
+        colisionCofre = false;
     }
 
     if (colisionEnemigo) {
         //Cuando colisione por primera ves la bandera = false
-        if (!bandera) {
+        if (!banderaEnemigo) {
             mostrarComunicador();
-            actualizarVida();
+            disminuirVida();
             comunicador.removeEventListener("animationend", () => { });
         }
         //Luego de actualizar la vida por primera vez hacemos bandera = true
         //para poder controlar una colision por enemigo
-        bandera = true;
+        banderaEnemigo = true;
         colisionEnemigo = false;
     } else if (golpeEnemigo) {
-        if (!bandera) {
+        if (!banderaEnemigo) {
             enemigo.morir();
             puntajeActual = puntajeActual + prendaColisionEnemigo;
         }
-        bandera = true;
+        banderaEnemigo = true;
         golpeEnemigo = false;
     }
 
@@ -151,6 +207,7 @@ function actualizar_estado() {
 
 function gameLoop() {
     limpiarEnemigosPasados();
+    limpiarCofre();
 
     actualizar_estado();
 
@@ -167,7 +224,8 @@ function gameLoop() {
         juegoContainer.classList.add('desaparecer');
         gameOverContainer.classList.remove('desaparecer');
         puntajeAnterior.innerHTML = puntajeActual;
-        clearInterval(intervalEnemigo);
+        clearInterval(intervalGeneracionEnemigo);
+        clearInterval(intervalCofre);
     }
 }
 
@@ -186,29 +244,24 @@ function mostrarComunicador() {
     });
 }
 
-function actualizarVida() {
+function disminuirVida() {
 
     switch (vidaValues) {
         case 4:
-            vida.style.backgroundPosition = "0px";
+            vida.style.backgroundPosition = "-80px";
             vidaValues = 3;
             break;
         case 3:
-            vida.style.backgroundPosition = "-80px";
+            vida.style.backgroundPosition = "-160px";
             vidaValues = 2;
             puntajeActual -= prendaColisionEnemigo;
             break;
         case 2:
-            vida.style.backgroundPosition = "-160px";
+            vida.style.backgroundPosition = "-240px";
             vidaValues = 1;
             puntajeActual -= prendaColisionEnemigo;
             break;
         case 1:
-            vida.style.backgroundPosition = "-240px";
-            vidaValues = 0;
-            puntajeActual -= prendaColisionEnemigo;
-            break;
-        case 0:
             manejadorAudio.sonarPerdio();
             in_game = false;
             in_gameOver = true;
@@ -218,7 +271,32 @@ function actualizarVida() {
     }
 
 }
-function detectarColision() {
+function aumentarVida() {
+
+    switch (vidaValues) {
+
+        // case 4:
+        //     vida.style.backgroundPosition = "-80px";
+        //     vidaValues = 3;
+        //     break;
+        case 3:
+            vida.style.backgroundPosition = "0px";
+            vidaValues = 4;
+            break;
+        case 2:
+            vida.style.backgroundPosition = "-80px";
+            vidaValues = 3;
+            break;
+        case 1:
+            vida.style.backgroundPosition = "-160px";
+            vidaValues = 2;
+            break;
+        default:
+            break;
+    }
+
+}
+function detectarColisionEnemigo() {
 
     let a = runner.status();
     let b = enemigo.status();
@@ -247,26 +325,66 @@ function detectarColision() {
         }
     }
 }
+function detectarColisionCofre() {
+
+    let a = runner.status();
+    let b = cofre.status();
+
+    let a_pos = {
+        t: a.top,
+        l: a.left,
+        r: a.left + a.width - 100,
+        b: a.top + a.height - 100
+    };
+    let b_pos = {
+        t: b.top,
+        l: b.left,
+        r: b.left + b.width - 80,
+        b: b.top + b.height - 80
+    };
+
+    //Detecta si se superponen las áreas
+    if (a_pos.l <= b_pos.r && a_pos.r >= b_pos.l
+        && a_pos.b >= b_pos.t && a_pos.t <= b_pos.b) {
+
+        colisionCofre = true;
+    }
+}
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
 function generarEnemigo() {
 
 
-    clearInterval(intervalEnemigo);
-    intervalEnemigo = setInterval(() => {
+    clearInterval(intervalGeneracionEnemigo);
+    intervalGeneracionEnemigo = setInterval(() => {
         generarEnemigo();
-    }, tiempoEnemigo);
+    }, tiempoGeneracionEnemigo);
 
 
-    tiempoEnemigo = getRandomArbitrary(minTiempoEnemigo * 1000, maxTiempoEnemigo * 1000);
+    tiempoGeneracionEnemigo = getRandomArbitrary(minTiempoEnemigo * 1000, maxTiempoEnemigo * 1000);
 
     //Cuando apareza un Enemigo habilitaremos una nueva colision
-    bandera = false;
+    banderaEnemigo = false;
 
-    enemigo = new Enemigo();
+    enemigo = new Enemigo(velocidadEnemigo);
     enemigos.push(enemigo);
 
+}
+
+function generarCofre() {
+    cofre = new Cofre();
+    banderaCofre = false;
+}
+
+function limpiarCofre() {
+    if (cofre) {
+        if (cofre.status().left < 0) {
+            console.log("se fue de la pantalla")
+            juegoContainer.removeChild(cofre.getNode());
+            cofre = null;
+        }
+    }
 }
 function limpiarEnemigosPasados() {
     enemigos.forEach(iteEnemigo => {
