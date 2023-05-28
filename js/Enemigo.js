@@ -33,4 +33,31 @@ class Enemigo extends ItemDinamico {
             document.getElementById("contenedor").removeChild(this.enemigo);
         })
     }
+
+    detectarColision(otro) {
+        let a = otro.status();
+        let b = this.status();
+        let colision = false;
+
+        let a_pos = {
+            t: a.top,
+            l: a.left,
+            r: a.left + a.width - 100,
+            b: a.top + a.height - 100
+        };
+        let b_pos = {
+            t: b.top,
+            l: b.left,
+            r: b.left + b.width - 100,
+            b: b.top + b.height - 100
+        };
+
+        //Detecta si se superponen las áreas
+        if (a_pos.l <= b_pos.r && a_pos.r >= b_pos.l
+            && a_pos.b >= b_pos.t && a_pos.t <= b_pos.b) {
+
+            colision = true;
+        }
+        return colision;
+    }
 }

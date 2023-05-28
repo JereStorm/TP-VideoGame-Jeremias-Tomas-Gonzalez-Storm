@@ -22,6 +22,7 @@ VARIABLES DE CONTROL JUEGO
 --------------------------------------
 */
 const prendaColisionEnemigo = 400;
+const premioVidaLLena = 1000;
 const pjPrincipal = document.getElementById('pibe');
 let in_game = false;
 let in_gameOver = false;
@@ -163,15 +164,52 @@ gameLoop();
 FUNCIONES DEL GAME LOOP
 --------------------------------------
 */
+function gameLoop() {
+    limpiarEnemigosPasados();
+    limpiarCofre();
+
+    actualizar_estado();
+
+    if (puntajeActual <= 0) {
+        in_game = false;
+        in_gameOver = true;
+        puntajeActual = 0;
+    }
+
+    if (in_game) {
+        requestAnimationFrame(gameLoop);
+    } else if (in_gameOver) {
+        manejadorAudio.pararPrincipal();
+        juegoContainer.classList.add('desaparecer');
+        gameOverContainer.classList.remove('desaparecer');
+        puntajeAnterior.innerHTML = puntajeActual;
+        clearInterval(intervalGeneracionEnemigo);
+        clearInterval(intervalCofre);
+    }
+}
 
 function actualizar_estado() {
+    verificarColisiones();
+
+    demostrarNuevoEstado();
+
+    puntaje.textContent = puntajeActual++;
+}
+
+function verificarColisiones() {
     if (enemigo && !banderaEnemigo) {
         let statusEnemigo = enemigo.status();
         let statusRunner = runner.status();
         //acoto el calculo de la colision a un punto cerca al runner
         if (statusEnemigo.left > 100 && statusEnemigo.left < statusRunner.left + 100) {
-            // console.log("el enemigo esta cerca")
-            detectarColisionEnemigo();
+            colisionEnemigo = enemigo.detectarColision(runner);
+            if (colisionEnemigo) {
+                if (pjPrincipal.classList.contains("caer")) {
+                    golpeEnemigo = true;
+                } else {
+                    colisionEnemigo = true;
+                }
+            }
         };
     }
 
@@ -180,10 +218,12 @@ function actualizar_estado() {
         let statusCofre = cofre.status();
 
         if (statusCofre.left > 100 && statusCofre.left < statusRunner.left + 100) {
-            detectarColisionCofre();
+            colisionCofre = cofre.detectarColision(runner);
         }
     }
+}
 
+function demostrarNuevoEstado() {
     if (colisionCofre) {
         if (!banderaCofre) {
             aumentarVida();
@@ -213,33 +253,6 @@ function actualizar_estado() {
         banderaEnemigo = true;
         golpeEnemigo = false;
     }
-
-    puntaje.textContent = puntajeActual++;
-}
-
-
-function gameLoop() {
-    limpiarEnemigosPasados();
-    limpiarCofre();
-
-    actualizar_estado();
-
-    if (puntajeActual <= 0) {
-        in_game = false;
-        in_gameOver = true;
-        puntajeActual = 0;
-    }
-
-    if (in_game) {
-        requestAnimationFrame(gameLoop);
-    } else if (in_gameOver) {
-        manejadorAudio.pararPrincipal();
-        juegoContainer.classList.add('desaparecer');
-        gameOverContainer.classList.remove('desaparecer');
-        puntajeAnterior.innerHTML = puntajeActual;
-        clearInterval(intervalGeneracionEnemigo);
-        clearInterval(intervalCofre);
-    }
 }
 
 /*
@@ -263,6 +276,7 @@ function disminuirVida() {
         case 4:
             vida.style.backgroundPosition = "-80px";
             vidaValues = 3;
+            puntajeActual -= prendaColisionEnemigo;
             break;
         case 3:
             vida.style.backgroundPosition = "-160px";
@@ -284,14 +298,14 @@ function disminuirVida() {
     }
 
 }
+
 function aumentarVida() {
 
     switch (vidaValues) {
 
-        // case 4:
-        //     vida.style.backgroundPosition = "-80px";
-        //     vidaValues = 3;
-        //     break;
+        case 4:
+            puntajeActual += premioVidaLLena;
+            break;
         case 3:
             vida.style.backgroundPosition = "0px";
             vidaValues = 4;
@@ -309,65 +323,12 @@ function aumentarVida() {
     }
 
 }
-function detectarColisionEnemigo() {
 
-    let a = runner.status();
-    let b = enemigo.status();
-
-    let a_pos = {
-        t: a.top,
-        l: a.left,
-        r: a.left + a.width - 100,
-        b: a.top + a.height - 100
-    };
-    let b_pos = {
-        t: b.top,
-        l: b.left,
-        r: b.left + b.width - 100,
-        b: b.top + b.height - 100
-    };
-
-    //Detecta si se superponen las áreas
-    if (a_pos.l <= b_pos.r && a_pos.r >= b_pos.l
-        && a_pos.b >= b_pos.t && a_pos.t <= b_pos.b) {
-
-        if (pjPrincipal.classList.contains("caer")) {
-            golpeEnemigo = true
-        } else {
-            colisionEnemigo = true;
-        }
-    }
-}
-function detectarColisionCofre() {
-
-    let a = runner.status();
-    let b = cofre.status();
-
-    let a_pos = {
-        t: a.top,
-        l: a.left,
-        r: a.left + a.width - 100,
-        b: a.top + a.height - 100
-    };
-    let b_pos = {
-        t: b.top,
-        l: b.left,
-        r: b.left + b.width - 80,
-        b: b.top + b.height - 80
-    };
-
-    //Detecta si se superponen las áreas
-    if (a_pos.l <= b_pos.r && a_pos.r >= b_pos.l
-        && a_pos.b >= b_pos.t && a_pos.t <= b_pos.b) {
-
-        colisionCofre = true;
-    }
-}
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
+
 function generarEnemigo() {
-    console.log(velocidadEnemigo)
 
     clearInterval(intervalGeneracionEnemigo);
     intervalGeneracionEnemigo = setInterval(() => {
@@ -393,12 +354,12 @@ function generarCofre() {
 function limpiarCofre() {
     if (cofre) {
         if (cofre.status().left < 0) {
-            console.log("se fue de la pantalla")
             juegoContainer.removeChild(cofre.getNode());
             cofre = null;
         }
     }
 }
+
 function limpiarEnemigosPasados() {
     enemigos.forEach(iteEnemigo => {
 
