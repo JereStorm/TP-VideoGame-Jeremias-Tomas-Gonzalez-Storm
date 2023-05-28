@@ -11,9 +11,11 @@ let puntaje = document.querySelector(".puntaje");
 let puntajeAnterior = document.getElementById("puntajeAnterior");
 let gameOverContainer = document.querySelector('.gameOver');
 let inicioJuegoContainer = document.querySelector('.inicio');
+let manualJuegoContainer = document.querySelector('.manual');
 let juegoContainer = document.getElementById("contenedor");
-let jugarDeNuevo = document.getElementById('jugarDeNuevo');
-let iniciarJuego = document.getElementById('iniciarJuego');
+let jugarDeNuevoBtn = document.getElementById('jugarDeNuevo');
+let manualJuegoBtn = document.getElementById('manualJuego');
+let iniciarJuego = document.querySelectorAll('.iniciarJuego');
 /*
 --------------------------------------
 VARIABLES DE CONTROL JUEGO
@@ -33,7 +35,7 @@ let counterEnemigo = 0;
 let intervalGeneracionEnemigo;
 let intervalVelocidadEnemigo;
 let intervalCofre;
-let tiempoCofre = 15000;
+let tiempoCofre = 10000;
 
 
 let vidaValues = 4;
@@ -60,37 +62,48 @@ const manejadorAudio = new ManejadorAudio();
 MANEJANDO EVENTOS DEL USUARIO
 --------------------------------------
 */
-iniciarJuego.addEventListener('click', () => {
-    manejadorAudio.sonarPrincipal();
-    inicioJuegoContainer.classList.add("desaparecer");
-    juegoContainer.classList.remove("desaparecer");
-    in_game = true;
-    gameLoop();
-
-    intervalGeneracionEnemigo = setInterval(() => {
-        generarEnemigo();
-    }, tiempoGeneracionEnemigo);
-
-    intervalCofre = setInterval(() => {
-        generarCofre();
-    }, tiempoCofre);
-
-    intervalVelocidadEnemigo = setInterval(() => {
-        if (velocidadEnemigo < 1.1) {
-            clearInterval(intervalVelocidadEnemigo);
-            return;
+for (let btnInicio of iniciarJuego) {
+    btnInicio.addEventListener('click', () => {
+        manejadorAudio.sonarPrincipal();
+        inicioJuegoContainer.classList.add("desaparecer");
+        if (!manualJuegoContainer.classList.contains('desaparecer')) {
+            manualJuegoContainer.classList.add('desaparecer');
         }
-        velocidadEnemigo = velocidadEnemigo - 0.1;
-    }, tiempoVelocidadEnemigo);
+        juegoContainer.classList.remove("desaparecer");
+        in_game = true;
+        gameLoop();
 
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowUp" && in_game) {
-            runner.saltar();
-        }
-    });
-})
+        intervalGeneracionEnemigo = setInterval(() => {
+            generarEnemigo();
+        }, tiempoGeneracionEnemigo);
 
-jugarDeNuevo.addEventListener('click', () => {
+        intervalCofre = setInterval(() => {
+            generarCofre();
+        }, tiempoCofre);
+
+        intervalVelocidadEnemigo = setInterval(() => {
+            if (velocidadEnemigo < 1.1) {
+                clearInterval(intervalVelocidadEnemigo);
+                return;
+            }
+            velocidadEnemigo = velocidadEnemigo - 0.1;
+        }, tiempoVelocidadEnemigo);
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowUp" && in_game) {
+                runner.saltar();
+            }
+        });
+    })
+}
+
+
+manualJuegoBtn.addEventListener('click', () => {
+    inicioJuegoContainer.classList.add('desaparecer');
+    manualJuegoContainer.classList.remove('desaparecer');
+});
+
+jugarDeNuevoBtn.addEventListener('click', () => {
     //removemos el cofre si lo hay
     if (cofre) {
         juegoContainer.removeChild(cofre.getNode());
@@ -354,7 +367,7 @@ function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
 function generarEnemigo() {
-
+    console.log(velocidadEnemigo)
 
     clearInterval(intervalGeneracionEnemigo);
     intervalGeneracionEnemigo = setInterval(() => {
