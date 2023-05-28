@@ -202,8 +202,8 @@ function verificarColisiones() {
         let statusRunner = runner.status();
         //acoto el calculo de la colision a un punto cerca al runner
         if (statusEnemigo.left > 100 && statusEnemigo.left < statusRunner.left + 100) {
-            colisionEnemigo = enemigo.detectarColision(runner);
-            if (colisionEnemigo) {
+            let colision = enemigo.detectarColision(runner);
+            if (colision) {
                 if (pjPrincipal.classList.contains("caer")) {
                     golpeEnemigo = true;
                 } else {
