@@ -5,6 +5,7 @@ class Enemigo extends ItemDinamico {
 
         this.enemigo = document.createElement("div");
         this.enemigo.classList.add("enemigo");
+        this.muerto = false;
         this.velocidad = velocidad;
 
         let theRandomNumber = Math.floor(Math.random() * 10) + 1;
@@ -30,8 +31,20 @@ class Enemigo extends ItemDinamico {
     morir() {
         this.enemigo.style.animation = 'enemigoMorir 2s ease-in';
         this.enemigo.addEventListener("animationend", () => {
-            document.getElementById("contenedor").removeChild(this.enemigo);
+            this.muerto = true;
         })
+    }
+
+    estaMuerto() {
+        return this.muerto;
+    }
+
+    fueraDePantalla() {
+        let statusActual = this.status();
+        if (statusActual.left < 0 - statusActual.width) {
+            return true;
+        }
+        return false;
     }
 
     detectarColision(otro) {

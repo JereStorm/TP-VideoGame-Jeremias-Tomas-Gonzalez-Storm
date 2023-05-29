@@ -10,6 +10,8 @@ class ManejadorAudio {
         this.golpe.src = "/music/golpe.mp3";
         this.bonus = new Audio();
         this.bonus.src = "/music/bonus.mp3";
+        this.boton = new Audio();
+        this.boton.src = "/music/boton.mp3";
         this.muereEnemigo = new Audio();
         this.muereEnemigo.src = "/music/muereEnemigo.mp3";
     }
@@ -40,5 +42,8 @@ class ManejadorAudio {
     }
     sonarMuereEnemigo() {
         this.muereEnemigo.play();
+    }
+    sonarBoton() {
+        this.boton.play();
     }
 }

@@ -16,6 +16,12 @@ let juegoContainer = document.getElementById("contenedor");
 let jugarDeNuevoBtn = document.getElementById('jugarDeNuevo');
 let manualJuegoBtn = document.getElementById('manualJuego');
 let iniciarJuego = document.querySelectorAll('.iniciarJuego');
+let botonesDOM = document.querySelectorAll("button");
+for (let boton of botonesDOM) {
+    boton.addEventListener('mouseover', () => {
+        manejadorAudio.sonarBoton();
+    })
+}
 /*
 --------------------------------------
 VARIABLES DE CONTROL JUEGO
@@ -116,6 +122,7 @@ jugarDeNuevoBtn.addEventListener('click', () => {
         juegoContainer.removeChild(enemigo.getNode());
     }
     enemigo = null;
+    enemigos = [];
     //reseteamos el puntaje
     puntajeActual = 1;
     //reseteamos la vida
@@ -359,6 +366,7 @@ function generarEnemigo() {
 function generarCofre() {
     cofre = new Cofre();
     banderaCofre = false;
+    console.log(enemigos)
 }
 
 function limpiarCofre() {
@@ -371,10 +379,11 @@ function limpiarCofre() {
 }
 
 function limpiarEnemigosPasados() {
-    enemigos.forEach(iteEnemigo => {
+    enemigos.forEach((iteEnemigo, indice) => {
 
-        if (iteEnemigo.status().left < 0 - iteEnemigo.status().width) {
+        if (iteEnemigo.fueraDePantalla() || iteEnemigo.estaMuerto()) {
             juegoContainer.removeChild(iteEnemigo.getNode());
+            enemigos.splice(indice, 1);
         }
     });
 }
