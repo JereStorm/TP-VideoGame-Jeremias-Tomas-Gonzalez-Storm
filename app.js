@@ -90,6 +90,7 @@ for (let btnInicio of iniciarJuego) {
 
         document.addEventListener("keydown", (event) => {
             if (event.key === "ArrowUp" && in_game) {
+                manejadorAudio.sonarSalto();
                 runner.saltar();
             }
         });
@@ -182,9 +183,15 @@ function gameLoop() {
         manejadorAudio.pararPrincipal();
         juegoContainer.classList.add('desaparecer');
         gameOverContainer.classList.remove('desaparecer');
-        puntajeAnterior.innerHTML = puntajeActual;
+        if (puntajeActual == 0) {
+            puntajeAnterior.innerHTML = '¡Te han dejado sin puntos!';
+
+        } else {
+            puntajeAnterior.innerHTML = puntajeActual;
+        }
         clearInterval(intervalGeneracionEnemigo);
         clearInterval(intervalCofre);
+        clearInterval(intervalVelocidadEnemigo);
     }
 }
 
@@ -226,6 +233,7 @@ function verificarColisiones() {
 function demostrarNuevoEstado() {
     if (colisionCofre) {
         if (!banderaCofre) {
+            manejadorAudio.sonarBonus();
             aumentarVida();
             juegoContainer.removeChild(cofre.getNode());
             cofre = null;
@@ -237,6 +245,7 @@ function demostrarNuevoEstado() {
     if (colisionEnemigo) {
         //Cuando colisione por primera ves la bandera = false
         if (!banderaEnemigo) {
+            manejadorAudio.sonarGolpe();
             mostrarComunicador();
             disminuirVida();
             comunicador.removeEventListener("animationend", () => { });
@@ -247,6 +256,7 @@ function demostrarNuevoEstado() {
         colisionEnemigo = false;
     } else if (golpeEnemigo) {
         if (!banderaEnemigo) {
+            manejadorAudio.sonarMuereEnemigo();
             enemigo.morir();
             puntajeActual = puntajeActual + prendaColisionEnemigo;
         }

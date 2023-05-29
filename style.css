@@ -120,14 +120,14 @@ PANTALLA DE MANUAL DE JUEGO
     top: 180px;
     display: flex;
     flex-direction: row;
-    width: 80%;
+    width: 100%;
     align-items: center;
     justify-content: center;
     gap: 50px;
     padding: 30px;
 }
 .manual article {
-    width: 300px;
+    width: 350px;
     padding: 20px auto;
     height: 350px;
     border-radius: 5px;
@@ -272,7 +272,7 @@ PERSONAJES
     background-position: center center;
     background-size: 100px 80px;
     z-index: 2;
-    animation: moverCofre-X 4s linear, moverCofre-Y 4s linear;
+    animation: moverCofre-X 3.5s linear, moverCofre-Y 4s linear;
 }
 @keyframes moverCofre-X {
     from {
@@ -288,19 +288,19 @@ PERSONAJES
         bottom: 90%;
     }
     20%{
-        bottom: 40%;
+        bottom: 35%;
     }
     40%{
         bottom: 90%;
     }
     60%{
-        bottom: 40%;
+        bottom: 35%;
     }
     80%{
         bottom: 90%;
     }
     100%{
-        bottom: 40%;
+        bottom: 35%;
     }
 
 }

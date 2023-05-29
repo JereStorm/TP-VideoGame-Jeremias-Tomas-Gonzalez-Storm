@@ -4,6 +4,14 @@ class ManejadorAudio {
         this.principal.src = "/music/temaPrincipal.mp3";
         this.perdio = new Audio();
         this.perdio.src = "/music/perdio.mp3";
+        this.salto = new Audio();
+        this.salto.src = "/music/salto.mp3";
+        this.golpe = new Audio();
+        this.golpe.src = "/music/golpe.mp3";
+        this.bonus = new Audio();
+        this.bonus.src = "/music/bonus.mp3";
+        this.muereEnemigo = new Audio();
+        this.muereEnemigo.src = "/music/muereEnemigo.mp3";
     }
 
 
@@ -19,5 +27,18 @@ class ManejadorAudio {
 
     sonarPerdio() {
         this.perdio.play();
+    }
+
+    sonarSalto() {
+        this.salto.play();
+    }
+    sonarBonus() {
+        this.bonus.play();
+    }
+    sonarGolpe() {
+        this.golpe.play();
+    }
+    sonarMuereEnemigo() {
+        this.muereEnemigo.play();
     }
 }
