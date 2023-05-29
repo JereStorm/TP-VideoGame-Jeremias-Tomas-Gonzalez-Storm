@@ -71,8 +71,6 @@ for (let btnInicio of iniciarJuego) {
             manualJuegoContainer.classList.add('desaparecer');
         }
         juegoContainer.classList.remove("desaparecer");
-        in_game = true;
-        gameLoop();
 
         intervalGeneracionEnemigo = setInterval(() => {
             generarEnemigo();
@@ -95,9 +93,11 @@ for (let btnInicio of iniciarJuego) {
                 runner.saltar();
             }
         });
+
+        in_game = true;
+        gameLoop();
     })
 }
-
 
 manualJuegoBtn.addEventListener('click', () => {
     inicioJuegoContainer.classList.add('desaparecer');

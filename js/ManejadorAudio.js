@@ -9,7 +9,7 @@ class ManejadorAudio {
 
     sonarPrincipal() {
         this.principal.play();
-        this.principal.volume = 0.5;
+        this.principal.volume = 0.8;
     }
     pararPrincipal() {
         this.principal.volume = 0;
