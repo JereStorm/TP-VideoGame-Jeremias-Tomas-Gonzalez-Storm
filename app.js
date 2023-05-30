@@ -91,7 +91,7 @@ for (let btnInicio of iniciarJuego) {
                 clearInterval(intervalVelocidadEnemigo);
                 return;
             }
-            velocidadEnemigo = velocidadEnemigo - 0.1;
+            velocidadEnemigo = velocidadEnemigo - 0.1; //1.9 //1.80 ...  //1.09
         }, tiempoVelocidadEnemigo);
 
         document.addEventListener("keydown", (event) => {
@@ -112,6 +112,8 @@ manualJuegoBtn.addEventListener('click', () => {
 });
 
 jugarDeNuevoBtn.addEventListener('click', () => {
+    pjPrincipal.classList.remove("saltar");
+    pjPrincipal.classList.add('correr');
     //removemos el cofre si lo hay
     if (cofre) {
         juegoContainer.removeChild(cofre.getNode());
@@ -213,35 +215,26 @@ function actualizar_estado() {
 
 function verificarColisiones() {
     if (enemigo && !banderaEnemigo) {
-        let statusEnemigo = enemigo.status();
-        let statusRunner = runner.status();
-        //acoto el calculo de la colision a un punto cerca al runner
-        if (statusEnemigo.left > 100 && statusEnemigo.left < statusRunner.left + 100) {
-            let colision = enemigo.detectarColision(runner);
-            if (colision) {
-                if (pjPrincipal.classList.contains("caer")) {
-                    golpeEnemigo = true;
-                } else {
-                    colisionEnemigo = true;
-                }
+
+        let colision = enemigo.detectarColision(runner);
+        if (colision) {
+            if (pjPrincipal.classList.contains("caer")) {
+                golpeEnemigo = true;
+            } else {
+                colisionEnemigo = true;
             }
-        };
+        }
     }
 
     if (cofre && !banderaCofre) {
-
-        let statusRunner = runner.status();
-        let statusCofre = cofre.status();
-
-        if (statusCofre.left > 100 && statusCofre.left < statusRunner.left + 100) {
-            colisionCofre = cofre.detectarColision(runner);
-        }
+        colisionCofre = cofre.detectarColision(runner);
     }
 
 }
 
 function demostrarNuevoEstado() {
     if (colisionCofre) {
+        //Cuando colisione por primera ves la bandera = false
         if (!banderaCofre) {
             manejadorAudio.sonarBonus();
             aumentarVida();

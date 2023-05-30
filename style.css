@@ -267,8 +267,8 @@ PERSONAJES
 
 .cofre{
     position: absolute;
-    width: 200px;
-    height: 180px;
+    width: 120px;
+    height: 100px;
     background: url(img/utils/cofre.png) no-repeat;
     background-position: center center;
     background-size: 100px 80px;
