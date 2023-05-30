@@ -28,6 +28,7 @@ class ManejadorAudio {
     }
 
     sonarPerdio() {
+        this.perdio.currentTime = 0.3;
         this.perdio.play();
     }
 
@@ -38,9 +39,11 @@ class ManejadorAudio {
         this.bonus.play();
     }
     sonarGolpe() {
+        this.golpe.currentTime = 0.3;
         this.golpe.play();
     }
     sonarMuereEnemigo() {
+        this.muereEnemigo.currentTime = 0.5;
         this.muereEnemigo.play();
     }
     sonarBoton() {

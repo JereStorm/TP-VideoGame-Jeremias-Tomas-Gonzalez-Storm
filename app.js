@@ -188,6 +188,7 @@ function gameLoop() {
         requestAnimationFrame(gameLoop);
     } else if (in_gameOver) {
         manejadorAudio.pararPrincipal();
+        manejadorAudio.sonarPerdio();
         juegoContainer.classList.add('desaparecer');
         gameOverContainer.classList.remove('desaparecer');
         if (puntajeActual == 0) {
@@ -228,6 +229,7 @@ function verificarColisiones() {
     }
 
     if (cofre && !banderaCofre) {
+
         let statusRunner = runner.status();
         let statusCofre = cofre.status();
 
@@ -235,6 +237,7 @@ function verificarColisiones() {
             colisionCofre = cofre.detectarColision(runner);
         }
     }
+
 }
 
 function demostrarNuevoEstado() {
@@ -306,7 +309,6 @@ function disminuirVida() {
             puntajeActual -= prendaColisionEnemigo;
             break;
         case 1:
-            manejadorAudio.sonarPerdio();
             in_game = false;
             in_gameOver = true;
             break;
@@ -364,9 +366,8 @@ function generarEnemigo() {
 }
 
 function generarCofre() {
-    cofre = new Cofre();
     banderaCofre = false;
-    console.log(enemigos)
+    cofre = new Cofre();
 }
 
 function limpiarCofre() {

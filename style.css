@@ -18,6 +18,7 @@ body{
     height: 300px;
     display: flex;
     justify-content: center;
+    color: rgb(119, 0, 0);
     align-items: center;
     transform: rotate(-15deg);
     font-family: 'Mogra', cursive;
