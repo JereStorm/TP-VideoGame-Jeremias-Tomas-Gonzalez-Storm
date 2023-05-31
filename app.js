@@ -90,7 +90,7 @@ for (let btnInicio of iniciarJuego) {
                 clearInterval(intervalVelocidadEnemigo);
                 return;
             }
-            velocidadEnemigo = Math.floor(velocidadEnemigo - 0.1);
+            velocidadEnemigo = velocidadEnemigo - 0.1;
         }, tiempoVelocidadEnemigo);
 
         document.addEventListener("keydown", (event) => {
@@ -111,8 +111,6 @@ manualJuegoBtn.addEventListener('click', () => {
 });
 
 jugarDeNuevoBtn.addEventListener('click', () => {
-    pjPrincipal.classList.remove("saltar");
-    pjPrincipal.classList.add('correr');
     //removemos el cofre si lo hay
     if (cofre) {
         juegoContainer.removeChild(cofre.getNode());
@@ -154,7 +152,7 @@ jugarDeNuevoBtn.addEventListener('click', () => {
             clearInterval(intervalVelocidadEnemigo);
             return;
         }
-        velocidadEnemigo = Math.floor(velocidadEnemigo - 0.1);
+        velocidadEnemigo = velocidadEnemigo - 0.1;
     }, tiempoVelocidadEnemigo);
 
     //volvemos a jugar
@@ -351,7 +349,7 @@ function generarEnemigo() {
 
     //Cuando apareza un Enemigo habilitaremos una nueva colision
     banderaEnemigo = false;
-
+    console.log(velocidadEnemigo)
     enemigo = new Enemigo(velocidadEnemigo);
     enemigos.push(enemigo);
 
