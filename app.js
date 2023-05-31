@@ -35,20 +35,20 @@ let in_gameOver = false;
 
 let tiempoGeneracionEnemigo = 5000;
 let tiempoVelocidadEnemigo = 10000;
+let tiempoCofre = 10000;
 let velocidadEnemigo = 1.9;
 let minTiempoEnemigo = 2;
 let maxTiempoEnemigo = 8;
-let counterEnemigo = 0;
 let intervalGeneracionEnemigo;
 let intervalVelocidadEnemigo;
 let intervalCofre;
-let tiempoCofre = 10000;
 
 
 let vidaValues = 4;
 let puntajeActual = 1;
 let runner = new Runner();
 let cofre = null;
+let cofres = [];
 let enemigo = null;
 let enemigos = [];
 let colisionEnemigo = false;
@@ -56,7 +56,6 @@ let colisionCofre = false;
 let golpeEnemigo = false;
 let banderaEnemigo = false;
 let banderaCofre = false;
-
 
 /*
 --------------------------------------
@@ -91,7 +90,7 @@ for (let btnInicio of iniciarJuego) {
                 clearInterval(intervalVelocidadEnemigo);
                 return;
             }
-            velocidadEnemigo = velocidadEnemigo - 0.1; //1.9 //1.80 ...  //1.09
+            velocidadEnemigo = Math.floor(velocidadEnemigo - 0.1);
         }, tiempoVelocidadEnemigo);
 
         document.addEventListener("keydown", (event) => {
@@ -155,7 +154,7 @@ jugarDeNuevoBtn.addEventListener('click', () => {
             clearInterval(intervalVelocidadEnemigo);
             return;
         }
-        velocidadEnemigo = velocidadEnemigo - 0.1;
+        velocidadEnemigo = Math.floor(velocidadEnemigo - 0.1);
     }, tiempoVelocidadEnemigo);
 
     //volvemos a jugar
@@ -361,15 +360,18 @@ function generarEnemigo() {
 function generarCofre() {
     banderaCofre = false;
     cofre = new Cofre();
+    cofres.push(cofre);
 }
 
 function limpiarCofre() {
-    if (cofre) {
-        if (cofre.status().left < 0) {
+    cofres.forEach((iteCofre, indice) => {
+        if (iteCofre.status().left < 0) {
             juegoContainer.removeChild(cofre.getNode());
+            cofres.splice(indice, 1);
             cofre = null;
         }
-    }
+    })
+
 }
 
 function limpiarEnemigosPasados() {
