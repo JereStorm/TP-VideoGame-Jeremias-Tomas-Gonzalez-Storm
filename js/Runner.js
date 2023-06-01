@@ -19,30 +19,24 @@ class Runner extends ItemDinamico {
             this.clean();
 
             this.personaje.classList.add("saltar");
-            console.log("saltando")
 
             setTimeout(() => {
-                console.log("salto")
                 this.caer();
-            }, 750);
+            }, 605);
         }
     }
     caer() {
         this.clean();
         this.personaje.classList.add("caer");
 
-
-        console.log("cayendo")
         setTimeout(() => {
-            console.log("cayo");
             this.correr();
-        }, 550);
+        }, 505);
     }
 
     clean() {
         this.personaje.classList.remove("correr");
         this.personaje.classList.remove("saltar");
         this.personaje.classList.remove("caer");
-        this.personaje.removeEventListener("animationend", () => { });
     }
 }
